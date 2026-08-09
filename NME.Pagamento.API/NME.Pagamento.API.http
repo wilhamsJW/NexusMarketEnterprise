@@ -1,0 +1,6 @@
+@NME.Pagamento.API_HostAddress = http://localhost:5212
+
+GET {{NME.Pagamento.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
