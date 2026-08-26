@@ -36,7 +36,20 @@ namespace NME.Identidade.API
             builder.Services.AddEndpointsApiExplorer();
 
             // Adiciona e gera a documentação do Swagger para você testar a API no navegador
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "NME Identidade API",
+                    Version = "v1",
+                    Description = "API de Identidade do Nexus Market Enterprise",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "Nexus Market Enterprise",
+                        Email = "contato@nexusmarket.com"
+                    }
+                });
+            });
 
             // =========================================================================
             // SEÇÃO 2: CONSTRUÇÃO DA APLICAÇÃO (A LINHA DIVISÓRIA)
@@ -56,7 +69,11 @@ namespace NME.Identidade.API
                 app.UseSwagger();
 
                 // Habilita a interface visual gráfica do Swagger no navegador para fazer testes
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "NME Identidade API v1");
+                    c.RoutePrefix = "swagger"; // Swagger UI accessible at /swagger
+                });
             }
 
             // Força o redirecionamento automático de chamadas HTTP não seguras para HTTPS (criptografado)
