@@ -4,14 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NME.Identidade.API.Data;
 using NME.Identidade.API.Extensions;
+using NME.Identidade.API.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure AppSettings
+// 1. Busca o bloco "AppSettings" dentro do arquivo appsettings.json
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
+
+// 2. Registra no container do .NET para injetar (IOptions<AppSettings>) em Controllers e Serviços
 builder.Services.Configure<AppSettings>(appSettingsSection);
 
+// 3. Converte o JSON em um objeto C# vivo para usar as propriedades aqui mesmo no Program.cs
 var appSettings = appSettingsSection.Get<AppSettings>()
     ?? throw new InvalidOperationException("Seção AppSettings não configurada no appsettings.json");
 
@@ -25,7 +29,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Configure JWT Authentication
-var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+var key = Encoding.UTF8.GetBytes(appSettings.Secret);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -63,6 +67,9 @@ bearerOptions.SaveToken = true;
     };
 });
 
+// Register JWT Service
+builder.Services.AddScoped<JwtService>();
+
 // Add Controllers
 builder.Services.AddControllers();
 
@@ -81,6 +88,32 @@ builder.Services.AddSwaggerGen(c =>
         {
             Name = "Nexus Market Enterprise",
             Email = "contato@nexusmarket.com"
+        }
+    });
+
+    // Configuração para autenticação JWT no Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "Insira o token JWT desta maneira: Bearer {seu token}",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
         }
     });
 });
