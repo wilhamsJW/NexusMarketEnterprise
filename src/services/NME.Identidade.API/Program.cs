@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 
-var appSettings = appSettingsSection.Get<AppSettings>();
+var appSettings = appSettingsSection.Get<AppSettings>()
+    ?? throw new InvalidOperationException("Seção AppSettings não configurada no appsettings.json");
 
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
