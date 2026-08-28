@@ -69,6 +69,7 @@ bearerOptions.SaveToken = true;
 
 // Register JWT Service
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<AuthService>();
 
 // Add Controllers
 builder.Services.AddControllers();
