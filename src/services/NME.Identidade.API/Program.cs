@@ -23,9 +23,10 @@ var appSettings = appSettingsSection.Get<AppSettings>()
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add Identity
+// Add Identity with Portuguese translation
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddErrorDescriber<IdentityTranslateErrorsExtensions>()
     .AddDefaultTokenProviders();
 
 // Configure JWT Authentication
@@ -67,7 +68,7 @@ bearerOptions.SaveToken = true;
     };
 });
 
-// Register JWT Service
+// Register Application Services
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 
