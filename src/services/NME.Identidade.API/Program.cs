@@ -1,7 +1,7 @@
 using NME.Identidade.API.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Environment.EnvironmentName = "Staging";
 builder.Configuration.AddApiConfigurationBuilder(builder.Environment);
 builder.Services.AddApiConfiguration(builder.Configuration);
 builder.Services.AddIdentityConfiguration(builder.Configuration);
