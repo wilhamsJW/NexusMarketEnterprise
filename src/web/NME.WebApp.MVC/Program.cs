@@ -1,3 +1,5 @@
+using NME.WebApp.MVC.Configuration;
+
 namespace NME.WebApp.MVC
 {
     public class Program
@@ -8,6 +10,7 @@ namespace NME.WebApp.MVC
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddIdentityConfiguration();
 
             var app = builder.Build();
 
@@ -24,7 +27,7 @@ namespace NME.WebApp.MVC
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseIdentityConfiguration();
 
             app.MapControllerRoute(
                 name: "default",
