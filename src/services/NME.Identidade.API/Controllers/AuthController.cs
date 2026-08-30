@@ -18,12 +18,9 @@ namespace NME.Identidade.API.Controllers
         /// <summary>
         /// Registra um novo usuário no sistema
         /// </summary>
-        /// <param name="usuarioRegistro">Dados de registro do usuário</param>
-        /// <returns>Token JWT e informações do usuário</returns>
-        [HttpPost("registrar")]
+        [HttpPost("nova-conta")]
         [ProducesResponseType(typeof(UsuarioRespostaLogin), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UsuarioRespostaLogin>> Registrar(UsuarioRegistro usuarioRegistro)
         {
             if (!ModelState.IsValid)
@@ -39,11 +36,7 @@ namespace NME.Identidade.API.Controllers
 
             if (!resultado.Sucesso)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    errors = resultado.Erros
-                });
+                return BadRequest(new { success = false, errors = resultado.Erros });
             }
 
             return Ok(resultado.Dados);
@@ -52,13 +45,9 @@ namespace NME.Identidade.API.Controllers
         /// <summary>
         /// Autentica um usuário existente
         /// </summary>
-        /// <param name="usuarioLogin">Credenciais de login</param>
-        /// <returns>Token JWT e informações do usuário</returns>
         [HttpPost("autenticar")]
-        [HttpPost("login")]
         [ProducesResponseType(typeof(UsuarioRespostaLogin), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UsuarioRespostaLogin>> Login(UsuarioLogin usuarioLogin)
         {
             if (!ModelState.IsValid)
@@ -74,11 +63,7 @@ namespace NME.Identidade.API.Controllers
 
             if (!resultado.Sucesso)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    errors = resultado.Erros
-                });
+                return BadRequest(new { success = false, errors = resultado.Erros });
             }
 
             return Ok(resultado.Dados);
