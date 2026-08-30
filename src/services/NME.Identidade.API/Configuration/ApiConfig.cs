@@ -42,12 +42,14 @@ namespace NME.Identidade.API.Configuration
             this IApplicationBuilder app,
             IWebHostEnvironment env)
         {
+            // Em Development a API roda apenas em HTTP puro.
+            // Redirecionar aqui causaria 307 e quebraria o POST vindo do MVC.
             if (!env.IsDevelopment())
             {
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
-            app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(CorsPolicyName);
             app.UseAuthentication();
