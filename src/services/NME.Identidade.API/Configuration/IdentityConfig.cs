@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using NME.Identidade.API.Data;
 using NME.Identidade.API.Extensions;
@@ -14,7 +16,8 @@ namespace NME.Identidade.API.Configuration
     {
         public static IServiceCollection AddIdentityConfiguration(
             this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IWebHostEnvironment env)
         {
             // DbContext
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -44,7 +47,8 @@ namespace NME.Identidade.API.Configuration
             })
             .AddJwtBearer(bearerOptions =>
             {
-                bearerOptions.RequireHttpsMetadata = true;
+                // Em Development a API trafega em HTTP puro
+                bearerOptions.RequireHttpsMetadata = !env.IsDevelopment();
                 bearerOptions.SaveToken = true;
                 bearerOptions.TokenValidationParameters = new TokenValidationParameters
                 {
