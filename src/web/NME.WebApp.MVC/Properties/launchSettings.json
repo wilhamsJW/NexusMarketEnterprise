@@ -33,6 +33,19 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "NME.WebApp.MVC (Development)": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5011",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
+  },
+  "Endpoints": {
+    "Login": "/api/identidade/autenticar",
+    "Registro": "/api/identidade/nova-conta"
   }
 }

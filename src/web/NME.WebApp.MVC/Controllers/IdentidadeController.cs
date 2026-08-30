@@ -2,12 +2,20 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using NME.WebApp.MVC.Models;
+using NME.WebApp.MVC.Services;
 
 namespace NME.WebApp.MVC.Controllers
 {
     [Route("")]
     public class IdentidadeController : Controller
     {
+        private readonly IAutenticacaoService _autenticacaoService;
+
+        public IdentidadeController(IAutenticacaoService autenticacaoService)
+        {
+            _autenticacaoService = autenticacaoService;
+        }
+
         // GET: Exibe a tela de cadastro vazia para o usuário
         [HttpGet("nova-conta")]
         public IActionResult Registro()
@@ -23,7 +31,11 @@ namespace NME.WebApp.MVC.Controllers
             // Retorna para a tela se houver erro de validação (ex: e-mail inválido)
             if (!ModelState.IsValid) return View(usuarioRegistro);
 
-            await Task.CompletedTask;
+            var resposta = await _autenticacaoService.Registro(usuarioRegistro);
+
+            if (ResponsePossuiErros(resposta)) return View(usuarioRegistro);
+
+            await _autenticacaoService.RealizarLogin(resposta);
 
             // Redireciona o usuário para a página inicial após registrar
             return RedirectToAction("Index", "Home");
@@ -43,7 +55,11 @@ namespace NME.WebApp.MVC.Controllers
         {
             if (!ModelState.IsValid) return View(usuarioLogin);
 
-            await Task.CompletedTask;
+            var resposta = await _autenticacaoService.Login(usuarioLogin);
+
+            if (ResponsePossuiErros(resposta)) return View(usuarioLogin);
+
+            await _autenticacaoService.RealizarLogin(resposta);
 
             return RedirectToAction("Index", "Home");
         }
@@ -52,9 +68,22 @@ namespace NME.WebApp.MVC.Controllers
         [HttpGet("sair")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // Remove o cookie de sessão antes do redirect, evitando usuário "fantasma" autenticado
+            await _autenticacaoService.Logout();
 
             return RedirectToAction("Index", "Home");
+        }
+
+        private bool ResponsePossuiErros(UsuarioRespostaLogin resposta)
+        {
+            if (resposta.Erros is null || !resposta.Erros.Any()) return false;
+
+            foreach (var erro in resposta.Erros)
+            {
+                ModelState.AddModelError(string.Empty, erro);
+            }
+
+            return true;
         }
     }
 }

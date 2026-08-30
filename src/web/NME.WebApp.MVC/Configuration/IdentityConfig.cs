@@ -12,14 +12,15 @@ namespace NME.WebApp.MVC.Configuration
                 {
                     options.LoginPath = "/login";
                     options.AccessDeniedPath = "/acesso-negado";
-                    options.LogoutPath = "/logout";
+                    options.LogoutPath = "/sair";
                     options.ExpireTimeSpan = TimeSpan.FromHours(1);
                     options.SlidingExpiration = true;
                     options.Cookie.Name = "NME.Identity";
                     options.Cookie.HttpOnly = true;
                     options.Cookie.IsEssential = true;
-                    options.Cookie.SameSite = SameSiteMode.Strict;
-                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    // SameAsRequest permite o cookie em HTTP local sem abrir mão do Secure em HTTPS
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 });
 
             services.AddAuthorization();

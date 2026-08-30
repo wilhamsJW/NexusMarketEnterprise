@@ -1,4 +1,5 @@
 using NME.WebApp.MVC.Configuration;
+using NME.WebApp.MVC.Services;
 
 namespace NME.WebApp.MVC
 {
@@ -11,6 +12,22 @@ namespace NME.WebApp.MVC
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddIdentityConfiguration();
+
+            // Necessário para o SignInAsync dentro do AutenticacaoService
+            builder.Services.AddHttpContextAccessor();
+
+            // HttpClient tipado apontando para a API de Identidade
+            builder.Services.AddHttpClient<IAutenticacaoService, AutenticacaoService>(client =>
+            {
+                var identidadeUrl = builder.Configuration["IdentidadeUrl"]
+                    ?? throw new InvalidOperationException("Configuração 'IdentidadeUrl' não definida.");
+
+                // Garante a barra final: sem ela o último segmento da base é descartado
+                if (!identidadeUrl.EndsWith('/')) identidadeUrl += "/";
+
+                client.BaseAddress = new Uri(identidadeUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
 
             var app = builder.Build();
 
