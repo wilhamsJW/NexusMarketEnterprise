@@ -1,0 +1,94 @@
+﻿@model NME.WebApp.MVC.Models.UsuarioRegistro
+
+@{
+    ViewData["Title"] = "Criar conta";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+
+            <div class="card border-0 shadow-lg rounded-3 overflow-hidden">
+
+                <div class="card-header border-0 text-center text-white py-4"
+                     style="background: linear-gradient(135deg, #198754 0%, #0d6efd 100%);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="currentColor" viewBox="0 0 16 16" class="mb-2">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
+                    </svg>
+                    <h4 class="fw-bold mb-0">Crie sua conta</h4>
+                    <p class="mb-0 small opacity-75">Leva menos de um minuto</p>
+                </div>
+
+                <div class="card-body p-4 p-lg-5">
+
+                    <form asp-action="Registro" method="post" novalidate>
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.026A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z" />
+                                    </svg>
+                                </span>
+                                <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="voce@exemplo.com" autocomplete="username" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Senha" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2" />
+                                    </svg>
+                                </span>
+                                <input asp-for="Senha" class="form-control border-start-0 ps-0" placeholder="••••••••" autocomplete="new-password" />
+                            </div>
+                            <span asp-validation-for="Senha" class="text-danger small"></span>
+                            <div class="form-text small">Mínimo de 6 caracteres, com letras maiúsculas, minúsculas, número e símbolo.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="SenhaConfirmacao" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z" />
+                                    </svg>
+                                </span>
+                                <input asp-for="SenhaConfirmacao" class="form-control border-start-0 ps-0" placeholder="••••••••" autocomplete="new-password" />
+                            </div>
+                            <span asp-validation-for="SenhaConfirmacao" class="text-danger small"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-semibold rounded-3 shadow-sm">
+                            Criar conta
+                        </button>
+
+                    </form>
+
+                    <hr class="my-4" />
+
+                    <p class="text-center text-muted small mb-0">
+                        Já tem uma conta?
+                        <a asp-action="Login" class="fw-semibold text-decoration-none">Faça login</a>
+                    </p>
+
+                </div>
+            </div>
+
+            <p class="text-center text-muted small mt-3 mb-0">
+                &copy; @DateTime.Now.Year Nexus Market Enterprise
+            </p>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

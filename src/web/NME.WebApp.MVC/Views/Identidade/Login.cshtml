@@ -1,0 +1,80 @@
+﻿@model NME.WebApp.MVC.Models.UsuarioLogin
+
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+
+            <div class="card border-0 shadow-lg rounded-3 overflow-hidden">
+
+                <div class="card-header border-0 text-center text-white py-4"
+                     style="background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="currentColor" viewBox="0 0 16 16" class="mb-2">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2" />
+                    </svg>
+                    <h4 class="fw-bold mb-0">Bem-vindo de volta</h4>
+                    <p class="mb-0 small opacity-75">Acesse sua conta Nexus Market</p>
+                </div>
+
+                <div class="card-body p-4 p-lg-5">
+
+                    <form asp-action="Login" method="post" novalidate>
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.026A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z" />
+                                    </svg>
+                                </span>
+                                <input asp-for="Email" class="form-control border-start-0 ps-0" placeholder="voce@exemplo.com" autocomplete="username" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Senha" class="form-label fw-semibold small text-uppercase text-muted"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2" />
+                                    </svg>
+                                </span>
+                                <input asp-for="Senha" class="form-control border-start-0 ps-0" placeholder="••••••••" autocomplete="current-password" />
+                            </div>
+                            <span asp-validation-for="Senha" class="text-danger small"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-3 shadow-sm">
+                            Entrar
+                        </button>
+
+                    </form>
+
+                    <hr class="my-4" />
+
+                    <p class="text-center text-muted small mb-0">
+                        Ainda não tem conta?
+                        <a asp-action="Registro" class="fw-semibold text-decoration-none">Cadastre-se</a>
+                    </p>
+
+                </div>
+            </div>
+
+            <p class="text-center text-muted small mt-3 mb-0">
+                &copy; @DateTime.Now.Year Nexus Market Enterprise
+            </p>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
