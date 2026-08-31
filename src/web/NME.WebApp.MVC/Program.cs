@@ -1,4 +1,6 @@
 using NME.WebApp.MVC.Configuration;
+using NME.WebApp.MVC.Interfaces;
+using NME.WebApp.MVC.Providers;
 using NME.WebApp.MVC.Services;
 
 namespace NME.WebApp.MVC
@@ -28,6 +30,10 @@ namespace NME.WebApp.MVC
                 client.BaseAddress = new Uri(identidadeUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
             });
+
+            // Provedor dos dados de identidade do usuario no contexto HTTP atual
+            // Resolve claims, email e token JWT da requisicao
+            builder.Services.AddScoped<IUser, AspNetUser>();
 
             var app = builder.Build();
 
