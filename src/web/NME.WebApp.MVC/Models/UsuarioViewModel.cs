@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NME.WebApp.MVC.Models
 {
@@ -12,6 +13,7 @@ namespace NME.WebApp.MVC.Models
         [StringLength(100, ErrorMessage = "O campo {0} precisa ter entre {2} e {1} caracteres", MinimumLength = 6)]
         public string Senha { get; set; } = string.Empty;
 
+        [Display(Name = "Confirmação de Senha")]
         [Compare("Senha", ErrorMessage = "As senhas não conferem.")]
         public string SenhaConfirmacao { get; set; } = string.Empty;
     }

@@ -85,7 +85,7 @@ namespace NME.WebApp.MVC.Services
             await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-        private async Task<UsuarioRespostaLogin> EnviarRequisicaoAsync<TRequest>(string endpoint, TRequest payload)
+        private async Task<UsuarioRespostaLogin> EnviarRequisicaoAsync<TRequest>(string endpointRegistro, TRequest payload)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace NME.WebApp.MVC.Services
                     Encoding.UTF8,
                     "application/json");
 
-                using var response = await _httpClient.PostAsync(endpoint, content);
+                using var response = await _httpClient.PostAsync(endpointRegistro, content);
 
                 var conteudo = await response.Content.ReadAsStringAsync();
 
@@ -102,7 +102,7 @@ namespace NME.WebApp.MVC.Services
                 {
                     _logger.LogWarning(
                         "Falha na chamada a {Endpoint}. Status: {Status}",
-                        endpoint,
+                        endpointRegistro,
                         response.StatusCode);
 
                     return new UsuarioRespostaLogin
@@ -116,7 +116,7 @@ namespace NME.WebApp.MVC.Services
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Serviço de identidade indisponível ao chamar {Endpoint}", endpoint);
+                _logger.LogError(ex, "Serviço de identidade indisponível ao chamar {Endpoint}", endpointRegistro);
 
                 return new UsuarioRespostaLogin
                 {
@@ -125,7 +125,7 @@ namespace NME.WebApp.MVC.Services
             }
             catch (JsonException ex)
             {
-                _logger.LogError(ex, "Falha ao desserializar a resposta de {Endpoint}", endpoint);
+                _logger.LogError(ex, "Falha ao desserializar a resposta de {Endpoint}", endpointRegistro);
 
                 return new UsuarioRespostaLogin
                 {
