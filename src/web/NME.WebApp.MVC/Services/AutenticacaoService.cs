@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using NME.WebApp.MVC.Models;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using NME.WebApp.MVC.Models;
 
 namespace NME.WebApp.MVC.Services
 {
@@ -13,6 +14,9 @@ namespace NME.WebApp.MVC.Services
         // Rotas relativas SEM barra inicial — obrigatório para concatenar com a BaseAddress
         private const string EndpointLogin = "api/identidade/autenticar";
         private const string EndpointRegistro = "api/identidade/nova-conta";
+
+        private const string MensagemInstabilidade =
+            "Serviço temporariamente indisponível. Tente novamente em instantes.";
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -104,8 +108,10 @@ namespace NME.WebApp.MVC.Services
             await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-        private async Task<UsuarioRespostaLogin> EnviarRequisicaoAsync<TRequest>(string endpointRegistro, TRequest payload)
+        private async Task<UsuarioRespostaLogin> EnviarRequisicaoAsync<TRequest>(string endpoint, TRequest payload)
         {
+            var urlCompleta = new Uri(_httpClient.BaseAddress!, endpoint).ToString();
+
             try
             {
                 using var content = new StringContent(
@@ -113,45 +119,45 @@ namespace NME.WebApp.MVC.Services
                     Encoding.UTF8,
                     "application/json");
 
-                using var response = await _httpClient.PostAsync(endpointRegistro, content);
-
+                using var response = await _httpClient.PostAsync(endpoint, content);
                 var conteudo = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogWarning(
-                        "Falha na chamada a {Endpoint}. Status: {Status}",
-                        endpointRegistro,
-                        response.StatusCode);
+                    _logger.LogWarning("Falha HTTP ao chamar {Url}. Status: {Status}. Corpo: {Corpo}",
+                        urlCompleta, response.StatusCode, conteudo);
+
+                    var isInfraError = (int)response.StatusCode >= 500;
 
                     return new UsuarioRespostaLogin
                     {
-                        Erros = ExtrairErros(conteudo)
+                        StatusCode = response.StatusCode,
+                        FalhaDeInfraestrutura = isInfraError,
+                        Erros = isInfraError ? [MensagemInstabilidade] : ExtrairErros(conteudo)
                     };
                 }
 
-                return JsonSerializer.Deserialize<UsuarioRespostaLogin>(conteudo, JsonOptions)
+                var sucesso = JsonSerializer.Deserialize<UsuarioRespostaLogin>(conteudo, JsonOptions)
                     ?? new UsuarioRespostaLogin { Erros = ["Resposta inválida do serviço de identidade."] };
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Serviço de identidade indisponível ao chamar {Endpoint}", endpointRegistro);
 
-                return new UsuarioRespostaLogin
-                {
-                    Erros = ["Serviço de identidade indisponível. Tente novamente em instantes."]
-                };
+                sucesso.StatusCode = response.StatusCode;
+                return sucesso;
             }
-            catch (JsonException ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Falha ao desserializar a resposta de {Endpoint}", endpointRegistro);
+                // O Polly já tentou fazer os retries/timeouts na camada de HttpClient.
+                // Se chegou aqui, é uma falha de infraestrutura (redireciona ou exibe instabilidade).
+                _logger.LogError(ex, "Falha de infraestrutura/comunicação ao chamar {Url}", urlCompleta);
 
-                return new UsuarioRespostaLogin
-                {
-                    Erros = ["Não foi possível interpretar a resposta do servidor."]
-                };
+                return RespostaDeInfraestrutura(HttpStatusCode.ServiceUnavailable);
             }
         }
+        private static UsuarioRespostaLogin RespostaDeInfraestrutura(HttpStatusCode statusCode) => new()
+        {
+            StatusCode = statusCode,
+            FalhaDeInfraestrutura = true,
+            Erros = [MensagemInstabilidade]
+        };
 
         private static IEnumerable<string> ExtrairErros(string conteudo)
         {

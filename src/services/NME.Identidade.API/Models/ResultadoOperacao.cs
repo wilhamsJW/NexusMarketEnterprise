@@ -6,10 +6,10 @@ namespace NME.Identidade.API.Models
         public T Dados { get; private set; }
         public IEnumerable<string> Erros { get; private set; }
 
-        private ResultadoOperacao(bool sucesso, T dados, IEnumerable<string> erros)
+        private ResultadoOperacao(bool sucesso, T? dados, IEnumerable<string>? erros)
         {
             Sucesso = sucesso;
-            Dados = dados;
+            Dados = dados ?? default!;
             Erros = erros ?? Array.Empty<string>();
         }
 
