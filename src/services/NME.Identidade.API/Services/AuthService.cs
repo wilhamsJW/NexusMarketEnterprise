@@ -29,60 +29,65 @@ namespace NME.Identidade.API.Services
 
         public async Task<ResultadoOperacao<UsuarioRespostaLogin>> RegistrarUsuarioAsync(UsuarioRegistro usuarioRegistro)
         {
-            var user = new IdentityUser
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                UserName = usuarioRegistro.Email,
-                Email = usuarioRegistro.Email,
-                EmailConfirmed = true
-            };
-
-            await using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
-            {
-                // Criar usuário no Identity
-                var resultCriacao = await _userManager.CreateAsync(user, usuarioRegistro.Senha);
-
-                if (!resultCriacao.Succeeded)
+                var user = new IdentityUser
                 {
-                    await transaction.RollbackAsync();
-                    return ResultadoOperacao<UsuarioRespostaLogin>.CriarFalha(
-                        resultCriacao.Errors.Select(e => e.Description).ToArray());
-                }
+                    UserName = usuarioRegistro.Email,
+                    Email = usuarioRegistro.Email,
+                    EmailConfirmed = true
+                };
 
-                // Gerar token JWT
-                UsuarioRespostaLogin respostaLogin;
+                await using var transaction = await _context.Database.BeginTransactionAsync();
+
                 try
                 {
-                    respostaLogin = await _jwtService.GerarJwtAsync(user.Email);
+                    // Criar usuário no Identity
+                    var resultCriacao = await _userManager.CreateAsync(user, usuarioRegistro.Senha);
+
+                    if (!resultCriacao.Succeeded)
+                    {
+                        await transaction.RollbackAsync();
+                        return ResultadoOperacao<UsuarioRespostaLogin>.CriarFalha(
+                            resultCriacao.Errors.Select(e => e.Description).ToArray());
+                    }
+
+                    // Gerar token JWT
+                    UsuarioRespostaLogin respostaLogin;
+                    try
+                    {
+                        respostaLogin = await _jwtService.GerarJwtAsync(user.Email);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Erro ao gerar token JWT para o usuário {Email}. Revertendo criação do usuário.", user.Email);
+
+                        await transaction.RollbackAsync();
+                        await _userManager.DeleteAsync(user);
+
+                        return ResultadoOperacao<UsuarioRespostaLogin>.CriarFalha(
+                            "Erro ao gerar token de autenticação. Por favor, tente novamente.");
+                    }
+
+                    // Commit da transação
+                    await transaction.CommitAsync();
+
+                    return ResultadoOperacao<UsuarioRespostaLogin>.CriarSucesso(respostaLogin);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Erro ao gerar token JWT para o usuário {Email}. Revertendo criação do usuário.", user.Email);
+                    _logger.LogError(ex, "Erro inesperado ao registrar usuário {Email}", user.Email);
 
                     await transaction.RollbackAsync();
-                    await _userManager.DeleteAsync(user);
 
-                    return ResultadoOperacao<UsuarioRespostaLogin>.CriarFalha(
-                        "Erro ao gerar token de autenticação. Por favor, tente novamente.");
+                    // Tentar limpar o usuário se foi criado
+                    await TentarRemoverUsuarioAsync(user.Email);
+
+                    return ResultadoOperacao<UsuarioRespostaLogin>.CriarFalha("Erro interno ao processar o registro. Por favor, tente novamente.");
                 }
-
-                // Commit da transação
-                await transaction.CommitAsync();
-
-                return ResultadoOperacao<UsuarioRespostaLogin>.CriarSucesso(respostaLogin);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erro inesperado ao registrar usuário {Email}", user.Email);
-
-                await transaction.RollbackAsync();
-
-                // Tentar limpar o usuário se foi criado
-                await TentarRemoverUsuarioAsync(user.Email);
-
-                return ResultadoOperacao<UsuarioRespostaLogin>.CriarFalha("Erro interno ao processar o registro. Por favor, tente novamente.");
-            }
+            });
         }
 
         public async Task<ResultadoOperacao<UsuarioRespostaLogin>> AutenticarUsuarioAsync(UsuarioLogin usuarioLogin)
