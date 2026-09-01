@@ -3,6 +3,7 @@ using NME.WebApp.MVC.Interfaces;
 using NME.WebApp.MVC.Providers;
 using NME.WebApp.MVC.Services;
 using Polly;
+using NME.Core;
 
 namespace NME.WebApp.MVC
 {
@@ -20,41 +21,24 @@ namespace NME.WebApp.MVC
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IUser, AspNetUser>();
 
-            // HttpClient tipado apontando para a API de Identidade
+            // HttpClient tipado apontando para a API de Identidade.
+            // Registra o contrato IAutenticacaoService e sua implementação AutenticacaoService no container de DI.
             builder.Services.AddHttpClient<IAutenticacaoService, AutenticacaoService>(client =>
             {
+                // Recupera a URL base configurada no appsettings.json
                 var identidadeUrl = builder.Configuration["IdentidadeUrl"]
                     ?? throw new InvalidOperationException("Configuração 'IdentidadeUrl' não definida.");
 
-                // Garante a barra final: sem ela o último segmento da base é descartado
+                // Garante a barra final na URL para evitar que a API descarte o último segmento de rota
                 if (!identidadeUrl.EndsWith('/')) identidadeUrl += "/";
 
+                // Define o endereço base para todas as chamadas feitas por este AutenticacaoService
                 client.BaseAddress = new Uri(identidadeUrl);
 
-                // Timeout do HttpClient acima do total da pipeline para não competir com o Polly
+                // Timeout bruto da instância do HttpClient (sockets de SO). 
+                // Deve ser SEMPRE MAIOR que o TotalRequestTimeout do Polly para que o Polly controle o tempo, e não o driver HTTP.
                 client.Timeout = TimeSpan.FromSeconds(60);
-            })
-            // Pipeline padrão: rate limiter -> total timeout -> retry -> circuit breaker -> attempt timeout
-            .AddStandardResilienceHandler(options =>
-            {
-                // Teto global da requisição, cobrindo todas as tentativas e backoffs
-                options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(30);
-
-                // Timeout individual por tentativa
-                options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(5);
-
-                // 3 retentativas com backoff exponencial e jitter (evita thundering herd)
-                options.Retry.MaxRetryAttempts = 3;
-                options.Retry.Delay = TimeSpan.FromSeconds(2);
-                options.Retry.BackoffType = DelayBackoffType.Exponential;
-                options.Retry.UseJitter = true;
-
-                // Disjuntor abre com 50% de falhas 5xx na janela, protegendo a API sob estresse
-                options.CircuitBreaker.FailureRatio = 0.5;
-                options.CircuitBreaker.MinimumThroughput = 5;
-                options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
-                options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
-            });
+            }).AddStandardResilienceHandler();
 
             var app = builder.Build();
 
