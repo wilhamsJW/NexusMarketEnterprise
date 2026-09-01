@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NME.WebApp.MVC.Models;
 using NME.WebApp.MVC.Services;
@@ -9,6 +10,9 @@ namespace NME.WebApp.MVC.Controllers
     [Route("")]
     public class IdentidadeController : Controller
     {
+        // Flag lida pelas views para trocar o formulário pela partial de erro de servidor
+        private const string ChaveErroServidor = "ErroServidor";
+
         private readonly IAutenticacaoService _autenticacaoService;
 
         public IdentidadeController(IAutenticacaoService autenticacaoService)
@@ -32,6 +36,13 @@ namespace NME.WebApp.MVC.Controllers
             if (!ModelState.IsValid) return View(usuarioRegistro);
 
             var resposta = await _autenticacaoService.Registro(usuarioRegistro);
+
+            // 5xx/timeout: troca de componente. 400: erros voltam para o ModelState.
+            if (resposta.FalhaDeInfraestrutura)
+            {
+                ViewData[ChaveErroServidor] = true;
+                return View(usuarioRegistro);
+            }
 
             if (ResponsePossuiErros(resposta)) return View(usuarioRegistro);
 
@@ -57,6 +68,13 @@ namespace NME.WebApp.MVC.Controllers
 
             var resposta = await _autenticacaoService.Login(usuarioLogin);
 
+            // 5xx/timeout: troca de componente. 400: erros voltam para o ModelState.
+            if (resposta.FalhaDeInfraestrutura)
+            {
+                ViewData[ChaveErroServidor] = true;
+                return View(usuarioLogin);
+            }
+
             if (ResponsePossuiErros(resposta)) return View(usuarioLogin);
 
             await _autenticacaoService.RealizarLogin(resposta);
@@ -65,13 +83,22 @@ namespace NME.WebApp.MVC.Controllers
         }
 
         // GET: Apenas executa a saída (limpa o cookie) e redireciona. Não precisa de tela.
-        [HttpGet("sair")]
+        [HttpPost("sair")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             // Remove o cookie de sessão antes do redirect, evitando usuário "fantasma" autenticado
             await _autenticacaoService.Logout();
 
             return RedirectToAction("Index", "Home");
+        }
+
+        // GET: Tela protegida que exibe os dados da conta do usuário logado
+        [Authorize]
+        [HttpGet("minha-conta")]
+        public IActionResult MinhaConta()
+        {
+            return View();
         }
 
         private bool ResponsePossuiErros(UsuarioRespostaLogin resposta)

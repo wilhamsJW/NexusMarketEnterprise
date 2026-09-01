@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json.Serialization;
 
 namespace NME.WebApp.MVC.Models
@@ -10,6 +11,14 @@ namespace NME.WebApp.MVC.Models
 
         [JsonPropertyName("errors")]
         public IEnumerable<string> Erros { get; set; } = Enumerable.Empty<string>();
+
+        // Status HTTP da chamada. Ignorado na desserialização; preenchido pelo AutenticacaoService.
+        [JsonIgnore]
+        public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
+
+        // True para 5xx, timeout, circuito aberto ou falha de rede — dispara a troca de componente na UI.
+        [JsonIgnore]
+        public bool FalhaDeInfraestrutura { get; set; }
     }
 
     public class UsuarioToken
