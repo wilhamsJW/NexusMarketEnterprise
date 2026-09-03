@@ -1,10 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using NME.Core.Http;
 using NME.WebApp.MVC.Models;
 
 namespace NME.WebApp.MVC.Services
@@ -17,11 +17,6 @@ namespace NME.WebApp.MVC.Services
 
         private const string MensagemInstabilidade =
             "Serviço temporariamente indisponível. Tente novamente em instantes.";
-
-        private static readonly JsonSerializerOptions JsonOptions = new()
-        {
-            PropertyNameCaseInsensitive = true
-        };
 
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -114,18 +109,17 @@ namespace NME.WebApp.MVC.Services
 
             try
             {
-                using var content = new StringContent(
-                    JsonSerializer.Serialize(payload, JsonOptions),
-                    Encoding.UTF8,
-                    "application/json");
+                // Uso da nova extensão centralizada em NME.Core.Http para padronizar o payload de envio
+                using var content = HttpContentExtensions.ObterConteudoString(payload);
 
                 using var response = await _httpClient.PostAsync(endpoint, content);
-                var conteudo = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    var conteudoErro = await response.Content.ReadAsStringAsync();
+
                     _logger.LogWarning("Falha HTTP ao chamar {Url}. Status: {Status}. Corpo: {Corpo}",
-                        urlCompleta, response.StatusCode, conteudo);
+                        urlCompleta, response.StatusCode, conteudoErro);
 
                     var isInfraError = (int)response.StatusCode >= 500;
 
@@ -133,11 +127,12 @@ namespace NME.WebApp.MVC.Services
                     {
                         StatusCode = response.StatusCode,
                         FalhaDeInfraestrutura = isInfraError,
-                        Erros = isInfraError ? [MensagemInstabilidade] : ExtrairErros(conteudo)
+                        Erros = isInfraError ? [MensagemInstabilidade] : ExtrairErros(conteudoErro)
                     };
                 }
 
-                var sucesso = JsonSerializer.Deserialize<UsuarioRespostaLogin>(conteudo, JsonOptions)
+                // Uso da nova extensão centralizada em NME.Core.Http para desserialização do JSON de resposta
+                var sucesso = await response.DeserializarObjetoResponseAsync<UsuarioRespostaLogin>()
                     ?? new UsuarioRespostaLogin { Erros = ["Resposta inválida do serviço de identidade."] };
 
                 sucesso.StatusCode = response.StatusCode;
@@ -152,6 +147,7 @@ namespace NME.WebApp.MVC.Services
                 return RespostaDeInfraestrutura(HttpStatusCode.ServiceUnavailable);
             }
         }
+
         private static UsuarioRespostaLogin RespostaDeInfraestrutura(HttpStatusCode statusCode) => new()
         {
             StatusCode = statusCode,
