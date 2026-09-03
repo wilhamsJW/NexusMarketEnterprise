@@ -4,42 +4,43 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 using NME.Core.Http;
+using NME.WebApp.MVC.Configuration;
 using NME.WebApp.MVC.Models;
 
 namespace NME.WebApp.MVC.Services
 {
     public class AutenticacaoService : IAutenticacaoService
     {
-        // Rotas relativas SEM barra inicial — obrigatório para concatenar com a BaseAddress
-        private const string EndpointLogin = "api/identidade/autenticar";
-        private const string EndpointRegistro = "api/identidade/nova-conta";
-
         private const string MensagemInstabilidade =
             "Serviço temporariamente indisponível. Tente novamente em instantes.";
 
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<AutenticacaoService> _logger;
+        private readonly AppSettings _appSettings;
 
         public AutenticacaoService(
             HttpClient httpClient,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<AutenticacaoService> logger)
+            ILogger<AutenticacaoService> logger,
+            IOptions<AppSettings> appSettings)
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
+            _appSettings = appSettings.Value;
         }
 
         public async Task<UsuarioRespostaLogin> Login(UsuarioLogin usuarioLogin)
         {
-            return await EnviarRequisicaoAsync(EndpointLogin, usuarioLogin);
+            return await EnviarRequisicaoAsync(_appSettings.LoginEndpoint, usuarioLogin);
         }
 
         public async Task<UsuarioRespostaLogin> Registro(UsuarioRegistro usuarioRegistro)
         {
-            return await EnviarRequisicaoAsync(EndpointRegistro, usuarioRegistro);
+            return await EnviarRequisicaoAsync(_appSettings.RegistroEndpoint, usuarioRegistro);
         }
 
         public async Task RealizarLogin(UsuarioRespostaLogin resposta)

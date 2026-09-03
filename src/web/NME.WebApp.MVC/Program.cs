@@ -1,9 +1,10 @@
+using Microsoft.Extensions.Options;
+using NME.Core;
 using NME.WebApp.MVC.Configuration;
 using NME.WebApp.MVC.Interfaces;
 using NME.WebApp.MVC.Providers;
 using NME.WebApp.MVC.Services;
 using Polly;
-using NME.Core;
 
 namespace NME.WebApp.MVC
 {
@@ -12,6 +13,9 @@ namespace NME.WebApp.MVC
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Configure AppSettings Options pattern
+            builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -23,11 +27,13 @@ namespace NME.WebApp.MVC
 
             // HttpClient tipado apontando para a API de Identidade.
             // Registra o contrato IAutenticacaoService e sua implementação AutenticacaoService no container de DI.
-            builder.Services.AddHttpClient<IAutenticacaoService, AutenticacaoService>(client =>
+            builder.Services.AddHttpClient<IAutenticacaoService, AutenticacaoService>((provider, client) =>
             {
-                // Recupera a URL base configurada no appsettings.json
-                var identidadeUrl = builder.Configuration["IdentidadeUrl"]
-                    ?? throw new InvalidOperationException("Configuração 'IdentidadeUrl' não definida.");
+                // Resolve o objeto AppSettings mapeado
+                var appSettings = provider.GetRequiredService<IOptions<AppSettings>>().Value;
+
+                var identidadeUrl = appSettings.AutenticacaoUrl
+                    ?? throw new InvalidOperationException("Configuração 'AutenticacaoUrl' não definida em AppSettings.");
 
                 // Garante a barra final na URL para evitar que a API descarte o último segmento de rota
                 if (!identidadeUrl.EndsWith('/')) identidadeUrl += "/";
