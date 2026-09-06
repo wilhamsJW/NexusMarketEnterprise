@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using NME.Catalogo.API.Data;
+
 namespace NME.Catalogo.API
 {
     public class Program
@@ -6,6 +9,12 @@ namespace NME.Catalogo.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // 1. REGISTRO DO DBCONTEXT NO CONTAINER DE INJEÇÃO DE DEPENDÊNCIA
+            // Lógica: Lê a "DefaultConnection" do appsettings.json e injeta
+            // o 'DbContextOptions<CatalogoContext>' via construtor do CatalogoContext.
+            builder.Services.AddDbContext<CatalogoContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
 
