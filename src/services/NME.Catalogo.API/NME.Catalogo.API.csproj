@@ -22,4 +22,6 @@
     <ProjectReference Include="..\..\building blocks\NME.Core\NME.Core.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 </Project>

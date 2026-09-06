@@ -1,6 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using NME.Catalogo.API.Data;
+using NME.Catalogo.API.Data.Respository;
+using NME.Catalogo.API.Models;
 
 namespace NME.Catalogo.API
 {
@@ -22,6 +24,9 @@ namespace NME.Catalogo.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+            builder.Services.AddScoped<CatalogoContext>();
 
             var app = builder.Build();
 

@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NME.Catalogo.API.Models;
+using NME.Core.DomainObjects.Data;
 
 namespace NME.Catalogo.API.Data
 {
     // CatalogoContext herda o comportamento de banco do 'DbContext' 
     // e implementa o contrato de transação do DDD 'IUnitOfWork'
-    public class CatalogoContext : DbContext
+    public class CatalogoContext : DbContext, IUnitOfWork
     {
         // CONSTRUTOR:
         // Recebe as configurações (como ConnectionString) via Injeção de Dependência
