@@ -1,8 +1,8 @@
-
 using Microsoft.EntityFrameworkCore;
 using NME.Catalogo.API.Data;
 using NME.Catalogo.API.Data.Respository;
 using NME.Catalogo.API.Models;
+using NME.Catalogo.API.Configurations;
 
 namespace NME.Catalogo.API
 {
@@ -12,37 +12,14 @@ namespace NME.Catalogo.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 1. REGISTRO DO DBCONTEXT NO CONTAINER DE INJEÇÃO DE DEPENDÊNCIA
-            // Lógica: Lê a "DefaultConnection" do appsettings.json e injeta
-            // o 'DbContextOptions<CatalogoContext>' via construtor do CatalogoContext.
-            builder.Services.AddDbContext<CatalogoContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-            builder.Services.AddScoped<CatalogoContext>();
+            builder.Services.AddApiConfiguration();
+            builder.Services.AddDependencyInjectionConfiguration(builder.Configuration);
+            builder.Services.AddSwaggerConfiguration();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
+            app.UseSwaggerConfiguration();
+            app.UseApiConfiguration(app.Environment);
 
             app.Run();
         }
