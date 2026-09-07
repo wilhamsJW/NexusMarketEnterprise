@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using NME.Catalogo.API.Data;
-using NME.Catalogo.API.Data.Respository;
-using NME.Catalogo.API.Models;
 using NME.Catalogo.API.Configurations;
 
 namespace NME.Catalogo.API
@@ -14,6 +10,7 @@ namespace NME.Catalogo.API
 
             builder.Services.AddApiConfiguration();
             builder.Services.AddDependencyInjectionConfiguration(builder.Configuration);
+            builder.Services.AddJwtConfiguration(builder.Configuration, builder.Environment);
             builder.Services.AddSwaggerConfiguration();
 
             var app = builder.Build();

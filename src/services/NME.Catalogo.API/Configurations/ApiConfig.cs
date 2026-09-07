@@ -25,6 +25,7 @@ namespace NME.Catalogo.API.Configurations
             this IApplicationBuilder app,
             IWebHostEnvironment env)
         {
+            // Em Development a API trafega em HTTP puro — sem redirect para HTTPS
             if (!env.IsDevelopment())
             {
                 app.UseHsts();
@@ -32,8 +33,14 @@ namespace NME.Catalogo.API.Configurations
             }
 
             app.UseRouting();
+
+            // CORS deve preceder autenticação/autorização
             app.UseCors(CorsPolicyName);
+
+            // Authentication ANTES de Authorization (ordem obrigatória)
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints => endpoints.MapControllers());
 
             return app;
