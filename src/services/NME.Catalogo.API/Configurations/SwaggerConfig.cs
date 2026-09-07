@@ -31,7 +31,6 @@ namespace NME.Catalogo.API.Configurations
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "NME Catálogo API v1");
                 // Swagger UI opens automatically at root
-                c.RoutePrefix = string.Empty;
             });
 
             return app;

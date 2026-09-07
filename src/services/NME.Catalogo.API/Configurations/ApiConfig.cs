@@ -35,7 +35,7 @@ namespace NME.Catalogo.API.Configurations
             app.UseRouting();
 
             // CORS deve preceder autenticação/autorização
-            app.UseCors(CorsPolicyName);
+            app.UseCors("Total");
 
             // Authentication ANTES de Authorization (ordem obrigatória)
             app.UseAuthentication();
