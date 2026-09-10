@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\WebApi.Core\WebApi.Core.csproj" />
     <ProjectReference Include="..\..\building blocks\NME.Core\NME.Core.csproj" />
   </ItemGroup>
 
