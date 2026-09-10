@@ -1,3 +1,5 @@
+using WebApi.Core.Identidade;
+
 namespace NME.Catalogo.API.Configurations
 {
     public static class ApiConfig
@@ -34,12 +36,10 @@ namespace NME.Catalogo.API.Configurations
 
             app.UseRouting();
 
+            app.UseJwtConfiguration();
+
             // CORS deve preceder autenticação/autorização
             app.UseCors("Total");
-
-            // Authentication ANTES de Authorization (ordem obrigatória)
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
 
