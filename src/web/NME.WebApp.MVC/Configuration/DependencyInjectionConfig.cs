@@ -3,6 +3,7 @@ using NME.Core;
 using NME.WebApp.MVC.Interfaces;
 using NME.WebApp.MVC.Providers;
 using NME.WebApp.MVC.Services;
+using NME.WebApp.MVC.Services.Handlers;
 
 namespace NME.WebApp.MVC.Configuration;
 
@@ -15,6 +16,9 @@ public static class DependencyInjectionConfig
 
         // AddScoped: Cria uma instância de AspNetUser por requisição HTTP para extrair dados do usuário logado
         services.AddScoped<IUser, AspNetUser>();
+
+        // Registro do DelegatingHandler de Autenticação
+        services.AddTransient<HttpClientAuthorizationDelegatingHandler>();
 
         // AddHttpClient: Registra o serviço IAutenticacaoService usando um HttpClient fortemente tipado
         // O parâmetro 'provider' (IServiceProvider) é o container do .NET usado para resolver dependências já registradas
@@ -58,7 +62,7 @@ public static class DependencyInjectionConfig
 
             // Configura o tempo máximo de espera do cliente HTTP
             client.Timeout = TimeSpan.FromSeconds(60);
-        })
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>()
         // Aplica resiliência e tratamento de falhas temporárias do Polly
         .AddStandardResilienceHandler();
     }
