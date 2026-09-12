@@ -1,4 +1,5 @@
 using NME.Catalogo.API.Configurations;
+using WebApi.Core.Identidade;
 
 namespace NME.Catalogo.API
 {
@@ -10,7 +11,6 @@ namespace NME.Catalogo.API
 
             builder.Services.AddApiConfiguration();
             builder.Services.AddDependencyInjectionConfiguration(builder.Configuration);
-            builder.Services.AddJwtConfiguration(builder.Configuration, builder.Environment);
             builder.Services.AddSwaggerConfiguration();
 
             var app = builder.Build();
