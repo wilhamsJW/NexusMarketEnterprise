@@ -5,5 +5,6 @@ namespace NME.WebApp.MVC.Configuration
         public string AutenticacaoUrl { get; set; } = string.Empty;
         public string LoginEndpoint { get; set; } = string.Empty;
         public string RegistroEndpoint { get; set; } = string.Empty;
+        public string CatalogoUrl { get; set; } = string.Empty;
     }
 }

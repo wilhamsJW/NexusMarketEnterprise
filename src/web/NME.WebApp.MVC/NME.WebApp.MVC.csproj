@@ -15,4 +15,9 @@
     <ProjectReference Include="..\..\building blocks\NME.Core\NME.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>
