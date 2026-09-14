@@ -13,7 +13,15 @@
         // Chave estrangeira para o EF Core
         public Guid ClienteId { get; private set; }
 
-        protected Endereco() { }
+        protected Endereco() {
+            Logradouro = null!;
+            Numero = null!;
+            Complemento = null!;
+            Bairro = null!;
+            Cep = null!;
+            Cidade = null!;
+            Estado = null!;
+        }
 
         public Endereco(string logradouro, string numero, string complemento, string bairro, string cep, string cidade, string estado, Guid clienteId)
         {

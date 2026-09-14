@@ -11,10 +11,15 @@ namespace NME.Cliente.API.Clientes
         public string Email { get; private set; }
         public string Cpf { get; private set; }
         public bool Excluido { get; private set; }
-        public Endereco Endereco { get; private set; }
+        public Endereco? Endereco { get; private set; }
 
         // Construtor protegido exigido pelo Entity Framework Core
-        protected Cliente() { }
+        protected Cliente()
+        {
+            Nome = null!;
+            Email = null!;
+            Cpf = null!;
+        }
 
         // Construtor principal para criação de um novo Cliente válido
         public Cliente(string nome, string email, string cpf)
