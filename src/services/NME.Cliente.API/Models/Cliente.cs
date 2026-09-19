@@ -8,8 +8,8 @@ namespace NME.Cliente.API.Clientes
     {
         // Propriedades com private set para garantir o encapsulamento
         public string Nome { get; private set; }
-        public string Email { get; private set; }
-        public string Cpf { get; private set; }
+        public Email Email { get; private set; } 
+        public Cpf Cpf { get; private set; }
         public bool Excluido { get; private set; }
         public Endereco? Endereco { get; private set; }
 
@@ -22,7 +22,7 @@ namespace NME.Cliente.API.Clientes
         }
 
         // Construtor principal para criação de um novo Cliente válido
-        public Cliente(string nome, string email, string cpf)
+        public Cliente(string nome, Email email, Cpf cpf)
         {
             Nome = nome;
             Email = email;
