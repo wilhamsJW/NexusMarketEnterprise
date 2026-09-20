@@ -4,7 +4,7 @@ using NME.Core.DomainObjects;
 
 namespace NME.Cliente.API.Clientes
 {
-    public class Cliente : Entity, IAggregateRoot
+    public class Client : Entity, IAggregateRoot
     {
         // Propriedades com private set para garantir o encapsulamento
         public string Nome { get; private set; }
@@ -14,7 +14,7 @@ namespace NME.Cliente.API.Clientes
         public Endereco? Endereco { get; private set; }
 
         // Construtor protegido exigido pelo Entity Framework Core
-        protected Cliente()
+        protected Client()
         {
             Nome = null!;
             Email = null!;
@@ -22,7 +22,7 @@ namespace NME.Cliente.API.Clientes
         }
 
         // Construtor principal para criação de um novo Cliente válido
-        public Cliente(Guid id, string nome, Email email, Cpf cpf)
+        public Client(Guid id, string nome, Email email, Cpf cpf)
         {
             Id = id;
             Nome = nome;
