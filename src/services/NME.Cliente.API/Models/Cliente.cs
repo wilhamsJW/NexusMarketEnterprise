@@ -22,8 +22,9 @@ namespace NME.Cliente.API.Clientes
         }
 
         // Construtor principal para criação de um novo Cliente válido
-        public Cliente(string nome, Email email, Cpf cpf)
+        public Cliente(Guid id, string nome, Email email, Cpf cpf)
         {
+            Id = id;
             Nome = nome;
             Email = email;
             Cpf = cpf;
