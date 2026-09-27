@@ -16,7 +16,7 @@ namespace NME.Cliente.API.Domain.Interface
         Task<IEnumerable<Client>> ObterTodos();
 
         // Busca um cliente específico através do seu CPF
-        Task<Client> ObterPorCpf(string cpf);
+        Task<Client?> ObterPorCpf(string cpf);
     }
 }
 
