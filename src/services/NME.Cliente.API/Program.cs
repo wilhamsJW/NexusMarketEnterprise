@@ -1,5 +1,9 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using NME.Cliente.API.Configuration;
+using NME.Cliente.API.Data;
 
-namespace NME.Cliente.API
+namespace NME.Clientes.API
 {
     public class Program
     {
@@ -8,9 +12,19 @@ namespace NME.Cliente.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            // Configuração do Entity Framework Core / DbContext
+            builder.Services.AddDbContext<ClientesContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Configuração do MediatR
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+            // Injeção de Dependência dos nossos Repositórios e Handlers
+            builder.Services.RegisterServices();
+
+            // Configuração do Swagger/OpenAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -26,7 +40,6 @@ namespace NME.Cliente.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
