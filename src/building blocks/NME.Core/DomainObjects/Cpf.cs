@@ -15,16 +15,17 @@ namespace NME.Core.DomainObjects
 
         public Cpf(string numero)
         {
-            var cpfLimpo = numero.ApenasNumeros();
-
-            if (!Validar(cpfLimpo))
+            // Se 'numero' for nulo no construtor, a chamada ao Validar já impedirá a instanciação
+            if (!Validar(numero))
                 throw new DomainException("CPF inválido.");
 
-            Numero = cpfLimpo;
+            Numero = numero.ApenasNumeros();
         }
 
-        public static bool Validar(string cpf)
+        // Aceita 'string?' para tratar a nulabilidade na raiz do Value Object
+        public static bool Validar(string? cpf)
         {
+            // Checagem imediata: se for nulo, vazio ou só espaços, interrompe antes de alocar recursos
             if (string.IsNullOrWhiteSpace(cpf)) return false;
 
             // Remove formatação caso a string venha bruta

@@ -4,6 +4,7 @@ using NME.Cliente.API.Data;
 using NME.Cliente.API.Data.Repository;
 using NME.Cliente.API.Domain.Interface;
 using NME.Clientes.API.Application.Commands;
+using NME.Clientes.API.Application.Handlers;
 
 namespace NME.Cliente.API.Configuration
 {

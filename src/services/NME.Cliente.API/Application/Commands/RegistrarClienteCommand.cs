@@ -13,16 +13,16 @@ namespace NME.Clientes.API.Application.Commands
     {
         public Guid Id { get; private set; }
         public string Nome { get; private set; }
-        public string Email { get; private set; }
-        public string Cpf { get; private set; }
+        public string EmailClient { get; private set; }
+        public string CpfClient { get; private set; }
 
-        public RegistrarClienteCommand(Guid id, string nome, string email, string cpf)
+        public RegistrarClienteCommand(Guid id, string nome, string emailClient, string cpfClient)
         {
             AggregateId = id;
             Id = id;
             Nome = nome;
-            Email = email;
-            Cpf = cpf;
+            EmailClient = emailClient;
+            CpfClient = cpfClient;
         }
 
         // Executa a validação e popula a propriedade ValidationResult herdada da classe Command
@@ -45,11 +45,11 @@ namespace NME.Clientes.API.Application.Commands
                     .NotEmpty()
                     .WithMessage("O nome do cliente não foi informado");
 
-                RuleFor(c => c.Cpf)
+                RuleFor(c => c.CpfClient)
                     .Must(TerCpfValido)
                     .WithMessage("O CPF informado não é válido.");
 
-                RuleFor(c => c.Email)
+                RuleFor(c => c.EmailClient)
                     .Must(TerEmailValido)
                     .WithMessage("O e-mail informado não é válido.");
             }

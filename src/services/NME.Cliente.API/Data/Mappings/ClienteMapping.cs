@@ -45,6 +45,37 @@ namespace NME.Cliente.API.Data.Mappings
                     .HasColumnType($"varchar({Cpf.CpfMaxNumero})");
             });
 
+            // Mapeia o Value Object Endereco
+            builder.OwnsOne(c => c.Endereco, tf =>
+            {
+                tf.Property(e => e.Logradouro)
+                    .IsRequired()
+                    .HasColumnType("varchar(200)");
+
+                tf.Property(e => e.Numero)
+                    .IsRequired()
+                    .HasColumnType("varchar(50)");
+
+                tf.Property(e => e.Cep)
+                    .IsRequired()
+                    .HasColumnType("varchar(20)");
+
+                tf.Property(e => e.Bairro)
+                    .IsRequired()
+                    .HasColumnType("varchar(100)");
+
+                tf.Property(e => e.Cidade)
+                    .IsRequired()
+                    .HasColumnType("varchar(100)");
+
+                tf.Property(e => e.Estado)
+                    .IsRequired()
+                    .HasColumnType("varchar(50)");
+
+                tf.Property(e => e.Complemento)
+                    .HasColumnType("varchar(250)");
+            });
+
             // Nome da tabela no banco de dados
             builder.ToTable("Clientes");
         }

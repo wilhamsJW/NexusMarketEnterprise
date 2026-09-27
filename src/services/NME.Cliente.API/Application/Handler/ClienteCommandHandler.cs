@@ -29,7 +29,7 @@ namespace NME.Clientes.API.Application.Handlers
             if (!message.EhValido()) return message.ValidationResult;
 
             // 2. Criação das instâncias de Value Objects e Entidade de Domínio
-            var cliente = new Client(message.Id, message.Nome, new Email(message.Email), new Cpf(message.Cpf));
+            var cliente = new Client(message.Id, message.Nome, new Email(message.EmailClient), new Cpf(message.CpfClient));
 
             // 3. Validação de regra de negócio (Verifica se CPF já está cadastrado)
             var clienteExistente = await _clienteRepository.ObterPorCpf(cliente.Cpf.Numero);
