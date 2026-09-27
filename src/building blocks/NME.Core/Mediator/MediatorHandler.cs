@@ -1,9 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 using MediatR;
 using NME.Core.Messages;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NME.Core.Mediator
 {

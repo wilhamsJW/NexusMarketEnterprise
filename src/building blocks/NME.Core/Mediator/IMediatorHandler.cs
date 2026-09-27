@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using FluentValidation.Results;
-using Microsoft.Extensions.Logging;
+﻿using FluentValidation.Results;
 using NME.Core.Messages;
 
 namespace NME.Core.Mediator

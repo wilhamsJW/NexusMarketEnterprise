@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using FluentValidation.Results;
-using NME.Core.Data;
+﻿using FluentValidation.Results;
 using NME.Core.DomainObjects.Data;
 
 namespace NME.Core.Messages

@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 using MediatR;
 
 namespace NME.Core.Messages
