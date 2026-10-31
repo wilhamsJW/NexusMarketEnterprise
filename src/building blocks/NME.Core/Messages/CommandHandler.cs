@@ -47,5 +47,7 @@ namespace NME.Core.Messages
 //    acessem e manipulem diretamente o ValidationResult para incluir mensagens de erro do negócio 
 //    (ex: "CPF já cadastrado").
 
-//IUnitOfWork uow: Interface do padrão Unit of Work (unidade de trabalho). Em vez do Handler chamar _context.SaveChanges(), ele chama uow.Commit(). Se o banco falhar ao salvar, a classe base adiciona a mensagem de erro na lista e retorna tudo de forma 
+//IUnitOfWork uow: Interface do padrão Unit of Work (unidade de trabalho). Em vez do Handler
+// chamar _context.SaveChanges(), ele chama uow.Commit(). Se o banco falhar ao salvar,
+// a classe base adiciona a mensagem de erro na lista e retorna tudo de forma 
 //    padronizada.

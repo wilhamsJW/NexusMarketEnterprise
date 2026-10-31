@@ -29,12 +29,13 @@ namespace NME.Core.Messages
     }
 }
 
-//Por baixo dos panos (Mecanismos C# e POO)
-//IRequest<ValidationResult>: Esta interface genérica vem da biblioteca MediatR. 
-//    Ela avisa ao barramento do MediatR que este objeto é uma requisição que espera receber como resposta 
-//    final um ValidationResult (classe do pacote FluentValidation).
+// Por baixo dos panos (Mecanismos C# e POO)
+// IRequest<ValidationResult>: É uma interface de marcação do MediatR. Ao assinar isso, você está dizendo ao C# e ao
+// MediatR: 
+// "Esta classe é um comando oficial que vai trafegar no barramento, e quando o processamento acabar, ele obrigatoriamente 
+// deve retornar um ValidationResult".
 
-//virtual bool EhValido(): A palavra-chave virtual significa que a classe filha 
+//    virtual bool EhValido(): A palavra-chave virtual significa que a classe filha 
 //    (ex: RegistrarClienteCommand) pode sobrescrever (override) este método com a sua 
 //    própria lógica de validação. Se a classe filha não sobrescrever e tentar chamar o método, 
 //    ele lança uma exceção NotImplementedException.
