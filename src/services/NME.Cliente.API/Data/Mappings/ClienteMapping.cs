@@ -13,10 +13,10 @@ namespace NME.Cliente.API.Data.Mappings
     {
         public void Configure(EntityTypeBuilder<Client> builder)
         {
-            // Define a chave primária
+            // Define a chave primária da tabela
             builder.HasKey(c => c.Id);
 
-            // Mapeia propriedades simples
+            // Mapeia propriedades primitivas simples
             builder.Property(c => c.Nome)
                 .IsRequired()
                 .HasColumnType("varchar(200)");
@@ -24,11 +24,21 @@ namespace NME.Cliente.API.Data.Mappings
             builder.Property(c => c.Excluido)
                 .IsRequired();
 
-            // --- Mapeamento de Value Objects (Owned Entities) ---
+            // =========================================================================
+            // --- MAPEAMENTO DE VALUE OBJECTS (Conceito DDD: Owned Entities) ---
+            // O que é: O EF Core vai "desmontar" os objetos de valor (Email, Cpf, Endereco)
+            // e gravar as propriedades deles diretamente nas colunas da tabela "Clientes",
+            // mantendo a classe de domínio rica e encapsulada em C#.
+            // =========================================================================
 
             // Mapeia o Value Object Email
             builder.OwnsOne(c => c.Email, tf =>
             {
+                // REVISÃO (DRY - Sincronia Domínio x Banco):
+                // Usamos a constante estática (Email.EmailMaxEndereco) criada lá na classe 
+                // de Domínio do Email. Isso impede "magic numbers" (números mágicos soltos) 
+                // e garante que o tamanho máximo aceito pela regra de negócio seja exatamente 
+                // o tamanho da coluna varchar(254) gerada no SQL Server.
                 tf.Property(c => c.Endereco)
                     .IsRequired()
                     .HasColumnName("Email")
@@ -38,6 +48,9 @@ namespace NME.Cliente.API.Data.Mappings
             // Mapeia o Value Object Cpf
             builder.OwnsOne(c => c.Cpf, tf =>
             {
+                // REVISÃO (DRY): O mesmo conceito do e-mail se aplica aqui.
+                // O Cpf.CpfMaxNumero (geralmente 11) define o tamanho do CPF na regra
+                // e no banco simultaneamente.
                 tf.Property(c => c.Numero)
                     .IsRequired()
                     .HasMaxLength(Cpf.CpfMaxNumero)
@@ -45,7 +58,7 @@ namespace NME.Cliente.API.Data.Mappings
                     .HasColumnType($"varchar({Cpf.CpfMaxNumero})");
             });
 
-            // Mapeia o Value Object Endereco
+            // Mapeia o Value Object Endereco (Composto por vários campos)
             builder.OwnsOne(c => c.Endereco, tf =>
             {
                 tf.Property(e => e.Logradouro)
@@ -76,18 +89,8 @@ namespace NME.Cliente.API.Data.Mappings
                     .HasColumnType("varchar(250)");
             });
 
-            // Nome da tabela no banco de dados
+            // Define explicitamente o nome da tabela física no SQL Server
             builder.ToTable("Clientes");
         }
     }
 }
-
-//Por baixo dos panos (Conceito POO/C# simples)
-//Constantes Estáticas (public const): Ao definir public const int 
-//    EmailMaxEndereco = 254; dentro da classe Email, o C# permite acessar esse valor
-//    diretamente usando Email.EmailMaxEndereco, sem precisar instanciar um objeto 
-//    com new Email().
-
-//DRY (Don't Repeat Yourself): Reutilizar a constante da regra de domínio 
-//    dentro do mapeamento do banco garante que o limite de caracteres da validação
-//    em memória seja idêntico ao tamanho da coluna varchar no SQL Server.

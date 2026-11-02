@@ -24,7 +24,7 @@ namespace NME.Core.Messages
             ValidationResult.Errors.Add(new ValidationFailure(string.Empty, mensagem));
         }
 
-        // Chama o Commit do banco via IUnitOfWork e intercepta se houve falha na persistência
+        // Chama o Commit do banco que esta na classe ClientesContext via IUnitOfWork e intercepta se houve falha na persistência
         protected async Task<ValidationResult> PersistirDados(IUnitOfWork uow)
         {
             if (!await uow.Commit()) AdicionarErro("Houve um erro ao persistir os dados");
