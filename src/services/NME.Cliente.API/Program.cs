@@ -19,6 +19,11 @@ namespace NME.Clientes.API
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Configuração do MediatR
+            // Varre todo o assembly procurando automaticamente por classes que implementam 
+            // as interfaces do MediatR (como IRequestHandler para Commands/Queries, 
+            // INotificationHandler para Events, e IPipelineBehavior para validações/logs).
+            // Ao encontrá-las, cadastra-as no container de Injeção de Dependências, 
+            // eliminando a necessidade de registro manual individual.
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
             // Injeção de Dependência dos nossos Repositórios e Handlers
