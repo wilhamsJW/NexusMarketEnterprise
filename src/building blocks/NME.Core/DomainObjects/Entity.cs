@@ -21,8 +21,22 @@ namespace NME.Core.DomainObjects
         // GERENCIAMENTO DE EVENTOS DE DOMÍNIO
         // ==========================================
 
+        // ==========================================
+        // GERENCIAMENTO DE EVENTOS DE DOMÍNIO
+        // ==========================================
+
+        // Variável privada que armazena a lista de eventos. 
+        // Se ninguém adicionou nada ainda, ela nasce vazia (null) para economizar memória.
         private List<Event> _notificacoes;
-        public IReadOnlyCollection<Event> Notificacoes => (_notificacoes ?? new List<Event>()).AsReadOnly();
+
+        /// <summary>
+        /// Propriedade pública apenas para leitura (IReadOnlyCollection).
+        /// - Se ninguém adicionou eventos, o operador (??=) cria uma lista vazia para evitar erros de nulo.
+        /// - Se alguém já adicionou eventos, ela retorna a lista real contendo os fatos que aconteceram.
+        /// - Quem chama esta propriedade é a infraestrutura (como o EF Core) no momento em que 
+        ///   o banco de dados termina de salvar, para verificar se há notificações pendentes e dispará-las.
+        /// </summary>
+        public IReadOnlyCollection<Event> Notificacoes => (_notificacoes ??= new List<Event>()).AsReadOnly();
 
         /// <summary>
         /// OBJETIVO: Adiciona um novo Evento de Domínio à lista interna da entidade.
