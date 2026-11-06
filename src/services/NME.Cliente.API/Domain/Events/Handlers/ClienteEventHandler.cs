@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using NME.Cliente.API.Domain.Events;
 
 namespace NME.Cliente.API.Domain.Events.Handlers
 {
@@ -30,3 +31,20 @@ namespace NME.Cliente.API.Domain.Events.Handlers
         }
     }
 }
+
+//Explicando a Sintaxe e os Conceitos de C# Usados:
+//: INotificationHandler<ClienteRegistradoEvent>(Implementação de Interface):
+
+//É o contrato que diz para o MediatR: "Esta classe sabe lidar exclusivamente com o evento " +
+//    "ClienteRegistradoEvent".Quando o MediatR lê isso na inicialização da aplicação,
+//    ele registra essa classe no seu catálogo interno.
+
+//Task Handle(ClienteRegistradoEvent notification, CancellationToken cancellationToken):
+
+//É o método obrigatório da interface do MediatR.Ele intercepta a notificação no momento exato 
+//    em que o _mediator.Publish() é acionado lá na nossa MediatorExtension.
+
+//CancellationToken (Token de Cancelamento):
+
+//Padrão assíncrono do .NET. Se o usuário fechar a requisição no meio do caminho ou a aplicação
+//    decidir abortar a operação por timeout, o token avisa o método para parar a execução e liberar recursos.
