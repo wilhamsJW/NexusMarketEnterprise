@@ -1,5 +1,4 @@
 using NME.Catalogo.API.Configurations;
-using WebApi.Core.Identidade;
 
 namespace NME.Catalogo.API
 {

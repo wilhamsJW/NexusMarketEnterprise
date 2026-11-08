@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NME.Catalogo.API.Models;
 using NME.Core.DomainObjects.Data;
+using NME.Core.Messages;
 
 namespace NME.Catalogo.API.Data
 {
@@ -33,6 +34,7 @@ namespace NME.Catalogo.API.Data
             // Procura dentro deste assembly (projeto) todas as classes que implementam 
             // 'IEntityTypeConfiguration' (ex: ProdutoMapping) e aplica as regras automaticamente.
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogoContext).Assembly);
+            modelBuilder.Ignore<Event>();
         }
 
         // IMPLEMENTAÇÃO DO PADRÃO UNIT OF WORK:
