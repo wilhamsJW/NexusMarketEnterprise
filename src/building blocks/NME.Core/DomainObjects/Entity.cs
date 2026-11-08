@@ -21,10 +21,6 @@ namespace NME.Core.DomainObjects
         // GERENCIAMENTO DE EVENTOS DE DOMÍNIO
         // ==========================================
 
-        // ==========================================
-        // GERENCIAMENTO DE EVENTOS DE DOMÍNIO
-        // ==========================================
-
         // Variável privada que armazena a lista de eventos. 
         // Se ninguém adicionou nada ainda, ela nasce vazia (null) para economizar memória.
         private List<Event> _notificacoes;

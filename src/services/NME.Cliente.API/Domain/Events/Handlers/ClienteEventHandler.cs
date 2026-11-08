@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using NME.Cliente.API.Domain.Events;
 
 namespace NME.Cliente.API.Domain.Events.Handlers
 {
@@ -21,7 +20,7 @@ namespace NME.Cliente.API.Domain.Events.Handlers
             System.Console.WriteLine("--------------------------------------------------");
             System.Console.WriteLine($"[EMAIL DE BOAS-VINDAS DISPARADO COM SUCESSO]");
             System.Console.WriteLine($"Para: {notification.Email}");
-            System.Console.WriteLine($"Cliente: {notification.Nome} (CPF: {notification.Cpf})");
+            System.Console.WriteLine($"Cliente: {notification.Nome}");
             System.Console.WriteLine($"Data/Hora do Evento: {notification.Timestamp}");
             System.Console.WriteLine("--------------------------------------------------\n");
 

@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using NME.Cliente.API.Clientes;
 using NME.Core.DomainObjects.Data;
+using NME.Core.Mediator;
+using NME.Core.Messages;
 
 namespace NME.Cliente.API.Data
 {
@@ -10,7 +13,14 @@ namespace NME.Cliente.API.Data
     /// </summary>
     public class ClientesContext : DbContext, IUnitOfWork
     {
-        public ClientesContext(DbContextOptions<ClientesContext> options) : base(options) { }
+        // Variável privada que armazena a referência do MediatR
+        private readonly IMediator _mediator;
+
+        // Construtor que recebe as opções do EF Core e o IMediator injetados pelo container
+        public ClientesContext(DbContextOptions<ClientesContext> options, IMediator mediator) : base(options)
+        {
+            _mediator = mediator;
+        }
 
         public DbSet<Client> Clientes { get; set; }
 
@@ -26,11 +36,20 @@ namespace NME.Cliente.API.Data
             }
 
             base.OnModelCreating(modelBuilder);
+
+            // Impede que o EF Core tente criar uma tabela ou mapear a classe base Event
+            modelBuilder.Ignore<Event>();
         }
 
         // Implementação da interface IUnitOfWork
         public async Task<bool> Commit()
         {
+            var sucess = await base.SaveChangesAsync() > 0;
+
+            if (sucess)
+            {
+                await _mediator.PublicarEventos(this);
+            }
             // Retorna true se pelo menos uma linha foi afetada no banco de dados
             return await base.SaveChangesAsync() > 0;
         }

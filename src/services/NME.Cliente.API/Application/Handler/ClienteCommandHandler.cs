@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using MediatR;
 using NME.Cliente.API.Clientes;
+using NME.Cliente.API.Domain.Events;
 using NME.Cliente.API.Domain.Interface;
 using NME.Clientes.API.Application.Commands;
 using NME.Core.DomainObjects;
@@ -42,6 +43,12 @@ namespace NME.Clientes.API.Application.Handlers
 
             // 4. Adiciona o cliente na memória do DbContext
             _clienteRepository.Adicionar(cliente);
+
+            // 5 - Adiciona o evento quando um cliente for registrado com sucesso, esse evento atualmente dispara um 
+            // e-mail de boas vindas ao cliente, mesmo essa chamada estando antes de PersistirDados, ela só acontece
+            // de fato se der sucesso pq intercptamos com EF CORE no ClientContext na linha await _mediator.PublicarEventos(this);
+            // e o mediator procura o handler q sabe disparar o evento e aciona ele
+            cliente.AdicionarEvento(new ClienteRegistradoEvent(message.Id, message.Nome, message.EmailClient));
 
             // 5. Persiste as alterações no banco usando o método Herdado de CommandHandler
             return await PersistirDados(_clienteRepository.UnitOfWork);
